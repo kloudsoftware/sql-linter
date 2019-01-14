@@ -1,0 +1,20 @@
+#!/usr/bin/env python3
+import subprocess
+import os
+
+os.chdir(os.path.dirname(__file__))
+linter_path = os.getcwd()
+
+result = subprocess.run(["git", "--no-pager", "diff", "--cached", "--name-only"], stdout=subprocess.PIPE)
+
+
+hasError = False
+for line in result.stdout.decode("utf-8").split("\n"):
+    if line is not None and line is not "":
+        result = subprocess.run([linter_path + "main.py", line, linter_path + "valid_identifiers"], stdout=subprocess.PIPE)
+        print(result.stdout.decode("utf-8"))
+        if result.returncode != 0:
+            hasError = True
+
+if hasError:
+    exit(1)
